@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { formatTime } from '../formattingHelpers/timerFormatting';
+// import { createWorkoutsTable, saveWorkout, loadWorkouts } from '../database/dbOperations';
+
 
 interface Exercise {
   name: string;
@@ -7,6 +10,7 @@ interface Exercise {
   decrement: number;
   remaining: number;
 }
+const INITIAL_ROUNDS = 10
 
 const initialExercises: Exercise[] = [
   { name: 'Pullups', total: 50, decrement: 5, remaining: 50 },
@@ -18,8 +22,15 @@ const initialExercises: Exercise[] = [
 export const NewWorkoutScreen: React.FC = () => {
   const [exercises, setExercises] = useState(initialExercises);
   const [timer, setTimer] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
+  const [timerActive, setTimerActive] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [round, setRound] = useState(INITIAL_ROUNDS);
+  const formattedTime = formatTime(timer)
+
+  // Build the database table if it doesn't already exist.
+  // useEffect(() => {
+  //   createWorkoutsTable();
+  // }, []);
 
   const completeRound = () => {
     setExercises(
@@ -28,58 +39,63 @@ export const NewWorkoutScreen: React.FC = () => {
         remaining: Math.max(exercise.remaining - exercise.decrement, 0),
       })),
     );
+    setRound(round - 1)
+    if (round === 1) {
+      if (timerActive) {
+        toggleTimer()
+      }
+    }
   };
 
   const toggleTimer = () => {
-    if (timerRunning) {
+    if (timerActive) {
       if (intervalId) clearInterval(intervalId);
     } else {
       const id = setInterval(() => setTimer((prev) => prev + 1), 1000);
       setIntervalId(id);
     }
 
-    setTimerRunning(!timerRunning);
+    setTimerActive(!timerActive);
   };
 
-  const saveWorkout = () => {
-    if (timerRunning) {
+  const handleSaveWorkout = () => {
+    if (timerActive) {
       toggleTimer();
     }
-    // Save the current state of the workout and the timer value here.
-    // This can be done using AsyncStorage, a local database, or an API call.
+    // Save the current state of the workout and the timer to the database.
+    // saveWorkout(exercises, timer);
 
     console.log('Workout saved:', { exercises, timer });
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.topRow}>
-        <TouchableOpacity style={styles.button} onPress={completeRound}>
-          <Text style={styles.buttonText}>Complete Round</Text>
+      <View style={styles.timerContainer}>
+        <Text style={styles.timerText}>{formattedTime}</Text>
+        <TouchableOpacity style={styles.timerButton} onPress={toggleTimer}>
+          <Text style={styles.timerButtonText}>{timerActive ? 'Pause' : 'Start'}</Text>
         </TouchableOpacity>
-        <View style={styles.textContainer}>
-          <Text style={styles.remainingText}>Remaining</Text>
-          <Text style={styles.subtractText}>Subtract</Text>
-        </View>
       </View>
-      <View style={styles.exerciseGrid}>
+      <View style={styles.grid}>
+        <View style={styles.gridRow}>
+          <Text style={[styles.gridCell, styles.header]}>Exercise</Text>
+          <Text style={[styles.gridCell, styles.header]}>Remaining</Text>
+          <Text style={[styles.gridCell, styles.header]}>Subtract</Text>
+        </View>
         {exercises.map((exercise, index) => (
-          <View key={index} style={styles.row}>
-            <Text style={styles.exerciseText}>{exercise.name}</Text>
-            <Text style={styles.remainingText}>{exercise.remaining}</Text>
-            <Text style={styles.decrementText}>{exercise.decrement}</Text>
+          <View key={index} style={styles.gridRow}>
+            <Text style={styles.gridCell}>{exercise.name}</Text>
+            <Text style={styles.gridCell}>{exercise.remaining}</Text>
+            <Text style={styles.gridCell}>{exercise.decrement}</Text>
           </View>
         ))}
       </View>
-      <View style={styles.timerRow}>
-        <TouchableOpacity style={styles.button} onPress={toggleTimer}>
-          <Text style={styles.buttonText}>{timerRunning ? 'Stop' : 'Start'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.timerText}>{timer}s</Text>
-      </View>
-      <View style={styles.saveButtonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={saveWorkout}>
-          <Text style={styles.saveButtonText}>Save</Text>
+      <TouchableOpacity style={styles.completeRoundButton} onPress={completeRound}>
+        <Text style={styles.completeRoundButtonText}>Complete Round</Text>
+      </TouchableOpacity>
+      <View style={styles.saveWorkoutContainer}>
+        <TouchableOpacity style={styles.saveWorkoutButton} onPress={handleSaveWorkout}>
+          <Text style={styles.saveWorkoutButtonText}>Save Workout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -89,86 +105,67 @@ export const NewWorkoutScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  topRow: {
-    flexDirection: 'row',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    width: '100%',
+    paddingTop: 40,
   },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  textContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '60%',
-  },
-  remainingText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  subtractText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  exerciseGrid: {
-    flexDirection: 'column',
-    marginBottom: 20,
-    alignSelf: 'stretch',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-    width: '100%',
-  },
-  exerciseText: {
-    fontSize: 18,
-  },
-  totalText: {
-    fontSize: 18,
-  },
-  decrementText: {
-    fontSize: 18,
-  },
-  timerRow: {
-    flexDirection: 'row',
+  timerContainer: {
     alignItems: 'center',
   },
   timerText: {
-    fontSize: 24,
-    marginLeft: 10,
+    fontSize: 30,
   },
-  saveButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
-    alignItems: 'center',
+  timerButton: {
+    padding: 10,
+    backgroundColor: '#00f',
+    borderRadius: 10,
+    marginTop: 10,
   },
-  saveButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  saveButtonText: {
+  timerButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 20,
+  },
+  grid: {
+    width: '90%',
+    marginBottom: 20,
+  },
+  gridRow: {
+    flexDirection: 'row',
+  },
+  gridCell: {
+    flex: 1,
+    textAlign: 'center',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  header: {
+    fontWeight: 'bold',
+    backgroundColor: '#f5f5f5',
+  },
+  completeRoundButton: {
+    padding: 10,
+    backgroundColor: '#0f0',
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  completeRoundButtonText: {
+    color: '#fff',
+    fontSize: 20,
+  },
+  saveWorkoutContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  saveWorkoutButton: {
+    padding: 10,
+    backgroundColor: '#00f',
+    borderRadius: 10,
+  },
+  saveWorkoutButtonText: {
+    color: '#fff',
+    fontSize: 20,
   },
 });
+
