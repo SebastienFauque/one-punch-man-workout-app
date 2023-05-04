@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { formatTime } from '../formattingHelpers/timerFormatting';
-// import { createWorkoutsTable, saveWorkout, loadWorkouts } from '../database/dbOperations';
-
+import { createWorkoutsTable, saveWorkout, fetchData } from '../database/dbOperations';
 
 interface Exercise {
   name: string;
@@ -28,9 +27,9 @@ export const NewWorkoutScreen: React.FC = () => {
   const formattedTime = formatTime(timer)
 
   // Build the database table if it doesn't already exist.
-  // useEffect(() => {
-  //   createWorkoutsTable();
-  // }, []);
+  useEffect(() => {
+    createWorkoutsTable();
+  }, []);
 
   const completeRound = () => {
     setExercises(
@@ -63,9 +62,9 @@ export const NewWorkoutScreen: React.FC = () => {
       toggleTimer();
     }
     // Save the current state of the workout and the timer to the database.
-    // saveWorkout(exercises, timer);
+    saveWorkout(exercises, timer);
 
-    console.log('Workout saved:', { exercises, timer });
+    console.log('Workout saved:', { exercises, elapsed_seconds: timer });
   };
 
   return (
@@ -98,13 +97,29 @@ export const NewWorkoutScreen: React.FC = () => {
           <Text style={styles.saveWorkoutButtonText}>Save Workout</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.saveWorkoutContainer}>
+        <TouchableOpacity style={styles.saveWorkoutButton} onPress={fetchData}>
+          <Text style={styles.saveWorkoutButtonText}>log workouts</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
+const colors = {
+  red: '#e60026',
+  yellow: '#ffd700',
+  orange: '#f26522',
+  white: '#fff',
+  light_grey: '#f5f5f5',
+  grey: '#ccc',
+  dark_grey: '#333333',
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.light_grey,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: 40,
@@ -114,16 +129,16 @@ const styles = StyleSheet.create({
   },
   timerText: {
     fontSize: 30,
-    color: '#e60026', // Red color for the timer text
+    color: colors.red,
   },
   timerButton: {
     padding: 10,
-    backgroundColor: '#f26522', // Orange (primary color) for the timer button
+    backgroundColor: colors.orange,
     borderRadius: 10,
     marginTop: 10,
   },
   timerButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 20,
   },
   grid: {
@@ -131,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.grey,
     overflow: 'hidden',
   },
   gridRow: {
@@ -141,22 +156,22 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     padding: 10,
-    borderColor: '#ccc',
+    borderColor: colors.grey,
     borderBottomWidth: 1,
   },
   header: {
     fontWeight: 'bold',
-    backgroundColor: '#ffd700', // Yellow color for the header background
-    color: '#333333', // Dark text color for better contrast
+    backgroundColor: colors.yellow,
+    color: colors.dark_grey,
   },
   completeRoundButton: {
     padding: 10,
-    backgroundColor: '#e60026', // Red color for the complete round button
+    backgroundColor: colors.red,
     borderRadius: 10,
     marginBottom: 20,
   },
   completeRoundButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 20,
   },
   saveWorkoutContainer: {
@@ -165,11 +180,11 @@ const styles = StyleSheet.create({
   },
   saveWorkoutButton: {
     padding: 10,
-    backgroundColor: '#f26522', // Orange (primary color) for the save workout button
+    backgroundColor: colors.orange,
     borderRadius: 10,
   },
   saveWorkoutButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 20,
   },
 });
