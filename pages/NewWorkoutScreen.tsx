@@ -104,7 +104,7 @@ export const NewWorkoutScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: 40,
@@ -114,10 +114,11 @@ const styles = StyleSheet.create({
   },
   timerText: {
     fontSize: 30,
+    color: '#e60026', // Red color for the timer text
   },
   timerButton: {
     padding: 10,
-    backgroundColor: '#00f',
+    backgroundColor: '#f26522', // Orange (primary color) for the timer button
     borderRadius: 10,
     marginTop: 10,
   },
@@ -145,12 +146,12 @@ const styles = StyleSheet.create({
   },
   header: {
     fontWeight: 'bold',
-    backgroundColor: '#00f',
-    color: '#fff',
+    backgroundColor: '#ffd700', // Yellow color for the header background
+    color: '#333333', // Dark text color for better contrast
   },
   completeRoundButton: {
     padding: 10,
-    backgroundColor: '#0f0',
+    backgroundColor: '#e60026', // Red color for the complete round button
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
   saveWorkoutButton: {
     padding: 10,
-    backgroundColor: '#00f',
+    backgroundColor: '#f26522', // Orange (primary color) for the save workout button
     borderRadius: 10,
   },
   saveWorkoutButtonText: {
