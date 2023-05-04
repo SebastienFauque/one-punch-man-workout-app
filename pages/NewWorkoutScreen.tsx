@@ -101,7 +101,6 @@ export const NewWorkoutScreen: React.FC = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -129,6 +128,10 @@ const styles = StyleSheet.create({
   grid: {
     width: '90%',
     marginBottom: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    overflow: 'hidden',
   },
   gridRow: {
     flexDirection: 'row',
@@ -137,12 +140,13 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     padding: 10,
-    borderWidth: 1,
     borderColor: '#ccc',
+    borderBottomWidth: 1,
   },
   header: {
     fontWeight: 'bold',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#00f',
+    color: '#fff',
   },
   completeRoundButton: {
     padding: 10,
@@ -168,4 +172,3 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
-
