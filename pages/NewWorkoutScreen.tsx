@@ -98,11 +98,6 @@ export const NewWorkoutScreen: React.FC = () => {
           <Text style={styles.saveWorkoutButtonText}>Save Workout</Text>
         </TouchableOpacity>
       </View>
-      {/* <View style={styles.saveWorkoutContainer}>
-        <TouchableOpacity style={styles.saveWorkoutButton} onPress={fetchData}>
-          <Text style={styles.saveWorkoutButtonText}>log workouts</Text>
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 };
@@ -138,8 +133,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 20,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.grey,
     backgroundColor: colors.sky_blue,
     overflow: 'hidden',
   },
@@ -175,7 +168,7 @@ const styles = StyleSheet.create({
   },
   saveWorkoutButton: {
     padding: 10,
-    backgroundColor: colors.orange,
+    backgroundColor: colors.dark_red,
     borderRadius: 10,
   },
   saveWorkoutButtonText: {

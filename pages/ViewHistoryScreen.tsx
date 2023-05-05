@@ -1,79 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { CalendarList } from 'react-native-calendars';
-import workoutsDb from '../database/workoutsDb'
-import  moment  from 'moment';
+import { View, StyleSheet } from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import moment from 'moment';
+
 import { colors } from '../styles/colors';
+import workoutsDb from '../database/workoutsDb';
+
+type ContainerStyle = {
+  backgroundColor?: string;
+  borderRadius?: number;
+  borderWidth?: number;
+  borderColor?: string;
+};
+
+type TextStyle = {
+  color: string;
+}
 
 export const ViewHistoryScreen = () => {
-  const [markedDates, setMarkedDates] = useState({});
+  const [markedDates, setMarkedDates] = useState<{ [key: string]: { selected: boolean; marked: boolean; customStyles: { container: ContainerStyle; text: TextStyle; }; }; }>({});
 
-  // ... your other code ...
-useEffect(() => {
-  const fetchWorkoutData = async () => {
-    workoutsDb.transaction((tx) => {
-      tx.executeSql(
-        'SELECT completed_at FROM workouts WHERE completed_at IS NOT NULL',
-        [],
-        (_, { rows }) => {
-          const data = rows._array;
-          // console.log('#####data: ', data)
-          const markedDates = data.reduce((acc, workout) => {
-            console.log("### acc: ", acc)
-            console.log("@@@ workout: ", workout)
-            // const date = workout.completed_at.split(' ')[0]; // Extract the date part
-            const localDate = moment(workout.completed_at).local().format('YYYY-MM-DD');
+  useEffect(() => {
+    const fetchCompletedWorkouts = async () => {
+      workoutsDb.transaction(tx => {
+        tx.executeSql(
+          'SELECT completed_at FROM workouts WHERE completed_at IS NOT NULL',
+          [],
+          (_, result) => {
+            const data: string[] = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              data.push(result.rows.item(i).completed_at);
+            }
 
-
-            console.log('#####$$$$date: ', localDate)
-            acc[localDate] = {
-              customStyles: {
-                container: {
-                  backgroundColor: colors.green,
-                  color: colors.black
+            const markedDates = data.reduce<{ [key: string]: { selected: boolean; marked: boolean; customStyles: { container: ContainerStyle; text: TextStyle; }; }; }>((acc, dateString) => {
+              const localDateString = moment.utc(dateString).local().format('YYYY-MM-DD');
+              acc[localDateString] = {
+                selected: false,
+                marked: false,
+                customStyles: {
+                  container: {
+                    backgroundColor: colors.sky_blue,
+                    borderRadius: 10,
+                  },
+                  text: {
+                    color: colors.black,
+                  },
                 },
-              },
-            };
-            return acc;
-          }, {});
-          setMarkedDates(markedDates);
-        },
-        (_, error) => {
-          console.error('Error fetching workout data:', error);
-          return false
-        },
-      );
-    });
-  };
+              };
+              return acc;
+            }, {});
 
-  fetchWorkoutData();
-}, []);
+            setMarkedDates(markedDates);
+          },
+          (_ , error ) => {
+            console.error('Error fetching data:', error);
+            return false;
+          }
+        );
+      });
+    };
+
+    fetchCompletedWorkouts();
+  }, []);
+
+  const currentMonth = moment().format('YYYY-MM');
+  const currentMonthStart = moment(currentMonth).startOf('month').format('YYYY-MM-DD');
+  const currentMonthEnd = moment(currentMonth).endOf('month').format('YYYY-MM-DD');
 
   return (
     <View style={styles.container}>
-      <CalendarList
-        pastScrollRange={24} // Scroll back up to 24 months
-        futureScrollRange={24} // Scroll forward up to 24 months
-        scrollEnabled={true}
-        showScrollIndicator={true}
-        markingType={'custom'}
+      <Calendar
+        minDate={currentMonthStart}
+        maxDate={currentMonthEnd}
+        markingType="custom"
         markedDates={markedDates}
-        // Customize the appearance of the calendar, e.g., colors, selected day style, etc.
         theme={{
-          backgroundColor: colors.yellow,
           calendarBackground: colors.yellow,
-          textSectionTitleColor: colors.black,
-          selectedDayBackgroundColor: colors.red,
-          selectedDayTextColor: colors.white,
-          todayTextColor: colors.red,
           dayTextColor: colors.black,
-          textDisabledColor: colors.grey,
-          arrowColor: colors.black,
-          monthTextColor: colors.black,
-          textMonthFontWeight: 'bold',
-          textDayFontSize: 18,
-          textMonthFontSize: 18,
-          textDayHeaderFontSize: 18,
+          textDayFontSize: 20,
+          textDayHeaderFontSize: 14,
+          textDayHeaderFontWeight: "bold",
+          textSectionTitleColor: colors.black,
+          textDisabledColor:colors.red,
+          monthTextColor: colors.red,
+          textMonthFontSize: 20,
+          textMonthFontWeight: "bold",
+          arrowColor: colors.red,
+
+        }}
+
+        style={{
+          marginTop: 20,
+
         }}
       />
     </View>
@@ -92,3 +110,4 @@ const styles = StyleSheet.create({
     margin: 20,
   },
 });
+
