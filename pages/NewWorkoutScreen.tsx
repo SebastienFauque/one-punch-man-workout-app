@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { formatTime } from '../formattingHelpers/timerFormatting';
 import { createWorkoutsTable, saveWorkout, fetchData } from '../database/dbOperations';
+import { colors } from '../styles/colors';
 
 interface Exercise {
   name: string;
@@ -39,7 +40,7 @@ export const NewWorkoutScreen: React.FC = () => {
       })),
     );
     setRound(round - 1)
-    if (round === 1) {
+    if (round - 1 === 0) {
       if (timerActive) {
         toggleTimer()
       }
@@ -106,20 +107,11 @@ export const NewWorkoutScreen: React.FC = () => {
   );
 };
 
-const colors = {
-  red: '#e60026',
-  yellow: '#ffd700',
-  orange: '#f26522',
-  white: '#fff',
-  light_grey: '#f5f5f5',
-  grey: '#ccc',
-  dark_grey: '#333333',
-}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light_grey,
+    backgroundColor: colors.yellow,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: 40,
@@ -129,11 +121,11 @@ const styles = StyleSheet.create({
   },
   timerText: {
     fontSize: 30,
-    color: colors.red,
+    color: colors.dark_red,
   },
   timerButton: {
     padding: 10,
-    backgroundColor: colors.orange,
+    backgroundColor: colors.red,
     borderRadius: 10,
     marginTop: 10,
   },
@@ -144,9 +136,11 @@ const styles = StyleSheet.create({
   grid: {
     width: '90%',
     marginBottom: 20,
+    marginTop: 20,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.grey,
+    backgroundColor: colors.sky_blue,
     overflow: 'hidden',
   },
   gridRow: {
@@ -158,11 +152,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: colors.grey,
     borderBottomWidth: 1,
+    fontSize: 18,
   },
   header: {
     fontWeight: 'bold',
-    backgroundColor: colors.yellow,
-    color: colors.dark_grey,
+    backgroundColor: colors.red,
+    color: colors.white,
   },
   completeRoundButton: {
     padding: 10,
