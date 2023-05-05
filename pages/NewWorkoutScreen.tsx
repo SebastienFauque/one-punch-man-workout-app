@@ -98,11 +98,11 @@ export const NewWorkoutScreen: React.FC = () => {
           <Text style={styles.saveWorkoutButtonText}>Save Workout</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.saveWorkoutContainer}>
+      {/* <View style={styles.saveWorkoutContainer}>
         <TouchableOpacity style={styles.saveWorkoutButton} onPress={fetchData}>
           <Text style={styles.saveWorkoutButtonText}>log workouts</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };

@@ -79,3 +79,11 @@ export const fetchData = () => {
   });
 };
 
+// export const fetchWorkVoutDates = () => {
+//   /*
+//   Gets the dates that there was a workout done.
+
+//   Returns:
+
+// }
+
