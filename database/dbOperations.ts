@@ -24,7 +24,7 @@ export const createWorkoutsTable = () => {
 // Save the workout data and time to the SQLite database
 export const saveWorkout = (exercises: any[], elapsed_seconds: number) => {
   // Get the current date and time in ISO format
-  const completedAt = new Date().toISOString();
+  const completedAt = new Date(2023, 5, 2).toISOString();
 
   workoutsDb.transaction((tx) => {
     tx.executeSql(
@@ -66,8 +66,7 @@ export const fetchData = () => {
       'SELECT * FROM workouts;',
       [],
       (_, { rows }) => {
-        console.log('Data:', rows._array);
-        // You can now use the fetched data, e.g., display it in your app or log it to the console.
+        console.log('rows: ', rows)
       },
       (_, error) => {
         console.error('Error fetching data:', error);
@@ -79,11 +78,4 @@ export const fetchData = () => {
   });
 };
 
-// export const fetchWorkVoutDates = () => {
-//   /*
-//   Gets the dates that there was a workout done.
-
-//   Returns:
-
-// }
 
