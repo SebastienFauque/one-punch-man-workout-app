@@ -28,7 +28,7 @@ interface Workout {
 
 const handleExport = async () => {
   // Fetch workout data from database and call exportDataAsJSON
-  const data = loadWorkouts()
+  const data = await loadWorkouts()
 
   // convert and export (share) data.
   await exportDataAsJSON(data);

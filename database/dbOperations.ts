@@ -23,8 +23,8 @@ export const createWorkoutsTable = () => {
 
 // Save the workout data and time to the SQLite database
 export const saveWorkout = (exercises: any[], elapsed_seconds: number) => {
-  // Get the current date and time in ISO format
-  const completedAt = new Date(2023, 5, 2).toISOString();
+  // Get the current date and time in ISO format to allow tracking workouts with date and time.
+  const completedAt = new Date().toISOString();
 
   workoutsDb.transaction((tx) => {
     tx.executeSql(
@@ -42,13 +42,8 @@ export const loadWorkouts = () => {
         'SELECT * FROM workouts;',
         [],
         (tx, results) => {
-          const workouts: any[] = [];
-
-          for (let i = 0; i < results.rows.length; i++) {
-            workouts.push(results.rows.item(i));
-          }
-
-          resolve(workouts);
+          // send the resolved promise back to the requester.
+          resolve(results.rows);
         },
         (error) => {
           reject(error);
@@ -58,23 +53,6 @@ export const loadWorkouts = () => {
         },
       );
     });
-  });
-};
-export const fetchData = () => {
-  workoutsDb.transaction((tx) => {
-    tx.executeSql(
-      'SELECT * FROM workouts;',
-      [],
-      (_, { rows }) => {
-        console.log('rows: ', rows)
-      },
-      (_, error) => {
-        console.error('Error fetching data:', error);
-
-        // Roll back the transaction by returning false.
-        return false
-      },
-    );
   });
 };
 
