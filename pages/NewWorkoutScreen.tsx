@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { formatTime } from '../formattingHelpers/timerFormatting';
-import { createWorkoutsTable, saveWorkout, fetchData } from '../database/dbOperations';
+import WheelPicker from 'react-native-wheely';
+import { createWorkoutsTable, saveWorkout } from '../database/dbOperations';
 import { colors } from '../styles/colors';
+
+const INITIAL_ROUNDS = 10
+const TOTAL_LEVELS = 25
 
 interface Exercise {
   name: string;
@@ -10,27 +14,65 @@ interface Exercise {
   decrement: number;
   remaining: number;
 }
-const INITIAL_ROUNDS = 10
+interface LevelData {
+  pullups: number;
+  pushups: number;
+  squats: number;
+  situps: number;
+}
 
-const initialExercises: Exercise[] = [
-  { name: 'Pullups', total: 50, decrement: 5, remaining: 50 },
-  { name: 'Squats', total: 100, decrement: 10, remaining: 100 },
-  { name: 'Pushups', total: 100, decrement: 10, remaining: 100 },
-  { name: 'Situps', total: 200, decrement: 20, remaining: 200 },
-];
+const allLevels: () => {[key: string]: LevelData} = () => {
+  const levels: {[key: string]: LevelData} = {}
+  for (let i = 0; i < TOTAL_LEVELS; i++) {
+    levels[`${i}`] = {pullups: i, pushups: i * 2, squats: i *2, situps: i * 4}
+  }
+  return levels;
+}
 
-export const NewWorkoutScreen: React.FC = () => {
+
+//const initialExercises: Exercise[] = [
+//  { name: 'Pullups', total: 50, decrement: allLevels[selectedLevel].pullups, remaining: 50 },
+//  { name: 'Squats', total: 100, decrement: allLevels[selectedLevel].squats, remaining: 100 },
+//  { name: 'Pushups', total: 100, decrement: allLevels[selectedLevel].pushups, remaining: 100},
+//  { name: 'Situps', total: 200, decrement: allLevels[selectedLevel].situps, remaining: 200 },
+//];
+
+// Now the idea is on changing how the exercises are displayed and altered. The problem was
+// that I would have to redefine the intiialExercise variable every time selectedLevels was
+// changed. Now, I want to simplify the data object for its display (and also for DB storage).
+// The new idea is to define the intialExercises and then separately define a decrement variable
+// that will be updated each time selectedLevels changes. The completeRound function will have to
+// be rewritten to loop through an Object where it is currently an Array.
+const initialExercises: {[key: string]: number} = {
+  Pullups: 50,
+  Squats: 100,
+  Pushups: 100,
+  Situps: 200,
+}
+
+const initialDecrementer: {[key: string]: number} = {
+  Pullups: 5,
+  Squats: 10,
+  Pushups: 10,
+  Situps: 20
+}
+
+export const NewWorkoutScreen: React.FC = (initialExercises) => {
   const [exercises, setExercises] = useState(initialExercises);
   const [timer, setTimer] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const [round, setRound] = useState(INITIAL_ROUNDS);
+  const [selectedLevel, setSelectedLevel] = useState(1)
   const formattedTime = formatTime(timer)
+
 
   // Build the database table if it doesn't already exist.
   useEffect(() => {
     createWorkoutsTable();
+    console.log(selectedLevel)
   }, []);
+
 
   const completeRound = () => {
     setExercises(
@@ -71,10 +113,26 @@ export const NewWorkoutScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.timerContainer}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{flexDirection: 'column', alignItems: 'center', marginRight: 30}}>
+          <WheelPicker
+            selected={selectedLevel}
+            options={Array.from({length: TOTAL_LEVELS}, (_, i) => i + 1)}
+            onChange={(level: string) => {console.log('selected: ', level); setSelectedLevel(Number(level))}}
+            containerStyle={{ width: 60, borderColor: colors.mustard, borderWidth: 2, borderRadius: 10}}
+            selectedIndicatorStyle={{ backgroundColor: colors.sky_blue}}
+            itemHeight={30}
+          />
+          <Text style={styles.levelText}>Level</Text>
+          </View>
+        <View style={{flexDirection: 'column', alignItems: 'center', marginLeft: 30}}>
         <Text style={styles.timerText}>{formattedTime}</Text>
         <TouchableOpacity style={styles.timerButton} onPress={toggleTimer}>
           <Text style={styles.timerButtonText}>{timerActive ? 'Pause' : 'Start'}</Text>
         </TouchableOpacity>
+        </View>
+
+        </View>
       </View>
       <View style={styles.grid}>
         <View style={styles.gridRow}>
@@ -112,11 +170,16 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   timerContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   timerText: {
     fontSize: 30,
     color: colors.dark_red,
+  },
+  levelText: {
+    fontSize: 20,
+    color: colors.dark_red
   },
   timerButton: {
     padding: 10,
