@@ -11,7 +11,6 @@ const TOTAL_LEVELS = 25
 interface Exercise {
   name: string;
   total: number;
-  decrement: number;
   remaining: number;
 }
 interface LevelData {
@@ -30,40 +29,31 @@ const allLevels: () => {[key: string]: LevelData} = () => {
 }
 
 
-//const initialExercises: Exercise[] = [
-//  { name: 'Pullups', total: 50, decrement: allLevels[selectedLevel].pullups, remaining: 50 },
-//  { name: 'Squats', total: 100, decrement: allLevels[selectedLevel].squats, remaining: 100 },
-//  { name: 'Pushups', total: 100, decrement: allLevels[selectedLevel].pushups, remaining: 100},
-//  { name: 'Situps', total: 200, decrement: allLevels[selectedLevel].situps, remaining: 200 },
-//];
+const initialExercises: Exercise[] = [
+  { name: 'Pullups', total: 50, remaining: 50 },
+  { name: 'Squats', total: 100, remaining: 100 },
+  { name: 'Pushups', total: 100, remaining: 100},
+  { name: 'Situps', total: 200, remaining: 200 },
+];
 
-// Now the idea is on changing how the exercises are displayed and altered. The problem was
-// that I would have to redefine the intiialExercise variable every time selectedLevels was
-// changed. Now, I want to simplify the data object for its display (and also for DB storage).
-// The new idea is to define the intialExercises and then separately define a decrement variable
-// that will be updated each time selectedLevels changes. The completeRound function will have to
-// be rewritten to loop through an Object where it is currently an Array.
-const initialExercises: {[key: string]: number} = {
-  Pullups: 50,
-  Squats: 100,
-  Pushups: 100,
-  Situps: 200,
+
+const getDecrementers: (level: number) => { [key: string]: number} = (level) => {
+  return {
+    Pullups: 1 * level,
+    Squats: 2 * level,
+    Pushups: 2 * level,
+    Situps: 4 * level
+  }
 }
 
-const initialDecrementer: {[key: string]: number} = {
-  Pullups: 5,
-  Squats: 10,
-  Pushups: 10,
-  Situps: 20
-}
-
-export const NewWorkoutScreen: React.FC = (initialExercises) => {
+export const NewWorkoutScreen: React.FC = () => {
   const [exercises, setExercises] = useState(initialExercises);
   const [timer, setTimer] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const [round, setRound] = useState(INITIAL_ROUNDS);
   const [selectedLevel, setSelectedLevel] = useState(1)
+  const [decrementers, setDecrementers] = useState(getDecrementers(1))
   const formattedTime = formatTime(timer)
 
 
@@ -73,19 +63,31 @@ export const NewWorkoutScreen: React.FC = (initialExercises) => {
     console.log(selectedLevel)
   }, []);
 
+  // Change the decrementers each time the user changes
+  // their selected level.
+  useEffect(() => {
+    setDecrementers(getDecrementers(selectedLevel))
+  }, [selectedLevel])
 
   const completeRound = () => {
+    // Subtracks repetitions from the remaining repetitions
+    // in the exercise using the decrementers and indexing by
+    // exercise name.
     setExercises(
       exercises.map((exercise) => ({
         ...exercise,
-        remaining: Math.max(exercise.remaining - exercise.decrement, 0),
+        remaining: Math.max(exercise.remaining - decrementers[exercise.name], 0),
       })),
     );
     setRound(round - 1)
-    if (round - 1 === 0) {
-      if (timerActive) {
+
+    // Stop the workout timer once all exercises remaining hit 0 so that
+    // an accurate completion time is recorded. Running time is separate.
+    // Currently all exercises will reach 0 at the same time.
+    // if (round - 1 === 0) {
+      //! TODO: Get this working correctly
+      if (exercises[0].remaining === 0) {
         toggleTimer()
-      }
     }
   };
 
@@ -144,7 +146,7 @@ export const NewWorkoutScreen: React.FC = (initialExercises) => {
           <View key={index} style={styles.gridRow}>
             <Text style={styles.gridCell}>{exercise.name}</Text>
             <Text style={styles.gridCell}>{exercise.remaining}</Text>
-            <Text style={styles.gridCell}>{exercise.decrement}</Text>
+            <Text style={styles.gridCell}>{decrementers[exercise.name]}</Text>
           </View>
         ))}
       </View>
