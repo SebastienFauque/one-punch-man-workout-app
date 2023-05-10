@@ -1,5 +1,7 @@
 import workoutsDb from "./workoutsDb";
-
+import { Workout } from "../types/types";
+// import SQLite, { SQLiteDatabase, Transaction, ResultSet, ResultSetRowList } from "react-native-sqlite-storage";
+import { SQLTransaction, SQLResultSet } from 'expo-sqlite';
 
 // Create the workouts table if it doesn't exist
 export const createWorkoutsTable = () => {
@@ -35,15 +37,20 @@ export const saveWorkout = (exercises: any[], elapsed_seconds: number) => {
 };
 
 // Load workouts from the SQLite database
-export const loadWorkouts = () => {
-  return new Promise((resolve, reject) => {
-    workoutsDb.transaction((tx) => {
+export const loadWorkouts = (): Promise<Workout[]> => {
+  return new Promise((resolve: (value: Workout[]) => void, reject: (value: any) => void) => {
+    workoutsDb.transaction((tx: SQLTransaction) => {
       tx.executeSql(
         'SELECT * FROM workouts;',
         [],
-        (tx, results) => {
+        (_tx: SQLTransaction, results: SQLResultSet) => {
+          const workoutData: Workout[] =[];
+
+          for (let i = 0; i < results.rows.length; i++) {
+            workoutData.push(results.rows.item(i))
+          }
           // send the resolved promise back to the requester.
-          resolve(results.rows);
+          resolve(workoutData);
         },
         (error) => {
           reject(error);

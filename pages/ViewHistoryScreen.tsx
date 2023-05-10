@@ -7,6 +7,7 @@ import moment from 'moment';
 import * as FileSystem from 'expo-file-system';
 import { colors } from '../styles/colors';
 import workoutsDb from '../database/workoutsDb';
+import { Workout } from '../types/types';
 
 type ContainerStyle = {
   backgroundColor?: string;
@@ -19,19 +20,12 @@ type TextStyle = {
   color: string;
 }
 
-interface Workout {
-  id: number;
-  name: string;
-  date: string;
-  completed: boolean;
-}
-
 const handleExport = async () => {
   // Fetch workout data from database and call exportDataAsJSON
-  const data = await loadWorkouts()
+  const workouts = await loadWorkouts()
 
   // convert and export (share) data.
-  await exportDataAsJSON(data);
+  await exportDataAsJSON(workouts);
 
 }
 
