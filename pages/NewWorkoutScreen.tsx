@@ -69,6 +69,12 @@ export const NewWorkoutScreen: React.FC = () => {
     setDecrementers(getDecrementers(selectedLevel))
   }, [selectedLevel])
 
+  // Allows the app to automatically stop the timer
+  // once the user has reached 0 exercises remaining.
+  useEffect(() => {
+    checkRemainingValues();
+  }, [exercises])
+
   const completeRound = () => {
     // Subtracks repetitions from the remaining repetitions
     // in the exercise using the decrementers and indexing by
@@ -81,15 +87,17 @@ export const NewWorkoutScreen: React.FC = () => {
     );
     setRound(round - 1)
 
-    // Stop the workout timer once all exercises remaining hit 0 so that
-    // an accurate completion time is recorded. Running time is separate.
-    // Currently all exercises will reach 0 at the same time.
-    // if (round - 1 === 0) {
-      //! TODO: Get this working correctly
-      if (exercises[0].remaining === 0) {
-        toggleTimer()
-    }
   };
+
+  // Stop the workout timer once all exercises remaining hit 0 so that
+  // an accurate completion time is recorded. Running time is separate.
+  // Currently all exercises will reach 0 at the same time.
+  const checkRemainingValues = () => {
+    const finishedExercises = exercises.some((exercise) => exercise.remaining <= 0)
+    if (finishedExercises && timerActive) {
+      toggleTimer();
+    }
+  }
 
   const toggleTimer = () => {
     if (timerActive) {
