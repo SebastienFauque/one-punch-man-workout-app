@@ -12,7 +12,6 @@ export const createWorkoutsTable = () => {
         elapsed_seconds INTEGER, completed_at TEXT);`,
       [],
       () => {
-      console.log('Table created successfully');
     },
     (tx, error) => {
       console.error('Error creating table:', error);

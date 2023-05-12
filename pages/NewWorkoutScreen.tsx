@@ -60,7 +60,6 @@ export const NewWorkoutScreen: React.FC = () => {
   // Build the database table if it doesn't already exist.
   useEffect(() => {
     createWorkoutsTable();
-    console.log(selectedLevel)
   }, []);
 
   // Change the decrementers each time the user changes
@@ -116,8 +115,6 @@ export const NewWorkoutScreen: React.FC = () => {
     }
     // Save the current state of the workout and the timer to the database.
     saveWorkout(exercises, timer);
-
-    console.log('Workout saved:', { exercises, elapsed_seconds: timer });
   };
 
   return (
@@ -128,7 +125,7 @@ export const NewWorkoutScreen: React.FC = () => {
           <WheelPicker
             selected={selectedLevel}
             options={Array.from({length: TOTAL_LEVELS}, (_, i) => i + 1)}
-            onChange={(level: string) => {console.log('selected: ', level); setSelectedLevel(Number(level))}}
+            onChange={(level: string) => {setSelectedLevel(Number(level))}}
             containerStyle={{ width: 60, borderColor: colors.mustard, borderWidth: 2, borderRadius: 10}}
             selectedIndicatorStyle={{ backgroundColor: colors.sky_blue}}
             itemHeight={30}
