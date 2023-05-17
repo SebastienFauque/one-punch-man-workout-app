@@ -1,14 +1,23 @@
 import React from 'react';
 import { Image, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-
+import { NavigationProp } from '@react-navigation/native';
 import { colors } from '../styles/colors';
 
 
-interface MainScreenProps {
-  navigation: any;
-}
 
-export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+type RootStackParamList = {
+  Home: undefined;
+  ViewHistory: undefined;
+  NewWorkout: undefined;
+};
+
+type MainScreenProps = {
+  navigation: NavigationProp<RootStackParamList, 'ViewHistory' | 'NewWorkout'>;
+};
+
+
+
+export const MainScreen: React.FC<MainScreenProps> = ({ navigation }: MainScreenProps) => {
 
   return (
     <View style={styles.container}>

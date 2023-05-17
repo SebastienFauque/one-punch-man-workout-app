@@ -8,8 +8,10 @@ export const createWorkoutsTable = () => {
   workoutsDb.transaction((tx) => {
     tx.executeSql(
       `CREATE TABLE IF NOT EXISTS workouts
-        (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT,
-        elapsed_seconds INTEGER, completed_at TEXT);`,
+        (id INTEGER PRIMARY KEY AUTOINCREMENT,
+          data TEXT,
+        elapsed_seconds INTEGER,
+        completed_at TEXT);`,
       [],
       () => {
     },
@@ -62,4 +64,15 @@ export const loadWorkouts = (): Promise<Workout[]> => {
   });
 };
 
-
+//! TODO: Finish the sql query or the python to calculate a streak
+//! Should allow 1 day between workouts.
+// Get workout streak
+// export const loadWorkoutDays = (): Promise<number> => {
+//   return new Promise((resolve: (streakDays: number) => void, reject: (value: any) => void) => {
+//     workoutsDb.transaction((tx: SQLTransaction) => {
+//       tx.executeSql(
+//         'SELECT completed_at FROM workouts;'
+//       )
+//     })
+//   })
+// }
