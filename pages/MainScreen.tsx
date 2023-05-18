@@ -32,9 +32,6 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }: MainScreen
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('NewWorkout')}>
         <Text style={styles.buttonText}>New Workout</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("NewRun")}>
-        <Text style={styles.buttonText}>New Run</Text>
-      </TouchableOpacity> */}
     </View>
   );
 };
