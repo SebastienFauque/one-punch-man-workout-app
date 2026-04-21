@@ -51,12 +51,15 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: colors.red,
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 30,
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '70%',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });
