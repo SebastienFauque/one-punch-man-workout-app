@@ -1,7 +1,7 @@
 import workoutsDb from "./workoutsDb";
 import { Workout } from "../types/types";
 // import SQLite, { SQLiteDatabase, Transaction, ResultSet, ResultSetRowList } from "react-native-sqlite-storage";
-import { SQLTransaction, SQLResultSet } from 'expo-sqlite';
+import { SQLTransaction, SQLResultSet } from 'expo-sqlite/legacy';
 
 // Create the workouts table if it doesn't exist
 export const createWorkoutsTable = () => {
