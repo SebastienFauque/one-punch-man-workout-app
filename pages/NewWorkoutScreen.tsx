@@ -29,11 +29,11 @@ const allLevels: () => {[key: string]: LevelData} = () => {
 }
 
 
-const initialExercises: Exercise[] = [
-  { name: 'Pullups', total: 50, remaining: 50 },
-  { name: 'Squats', total: 100, remaining: 100 },
-  { name: 'Pushups', total: 100, remaining: 100},
-  { name: 'Situps', total: 200, remaining: 200 },
+const getExercisesForLevel = (level: number): Exercise[] => [
+  { name: 'Pullups', total: level * INITIAL_ROUNDS, remaining: level * INITIAL_ROUNDS },
+  { name: 'Squats', total: level * 2 * INITIAL_ROUNDS, remaining: level * 2 * INITIAL_ROUNDS },
+  { name: 'Pushups', total: level * 2 * INITIAL_ROUNDS, remaining: level * 2 * INITIAL_ROUNDS },
+  { name: 'Situps', total: level * 4 * INITIAL_ROUNDS, remaining: level * 4 * INITIAL_ROUNDS },
 ];
 
 
@@ -47,7 +47,7 @@ const getDecrementers: (level: number) => { [key: string]: number} = (level) => 
 }
 
 export const NewWorkoutScreen: React.FC = () => {
-  const [exercises, setExercises] = useState(initialExercises);
+  const [exercises, setExercises] = useState(() => getExercisesForLevel(1));
   const [timer, setTimer] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
@@ -62,10 +62,10 @@ export const NewWorkoutScreen: React.FC = () => {
     createWorkoutsTable();
   }, []);
 
-  // Change the decrementers each time the user changes
-  // their selected level.
   useEffect(() => {
-    setDecrementers(getDecrementers(selectedLevel))
+    setDecrementers(getDecrementers(selectedLevel));
+    setExercises(getExercisesForLevel(selectedLevel));
+    setRound(INITIAL_ROUNDS);
   }, [selectedLevel])
 
   // Allows the app to automatically stop the timer
@@ -141,11 +141,12 @@ export const NewWorkoutScreen: React.FC = () => {
 
         </View>
       </View>
+      <Text style={styles.roundsText}>Rounds Left: {round}</Text>
       <View style={styles.grid}>
         <View style={styles.gridRow}>
           <Text style={[styles.gridCell, styles.header]}>Exercise</Text>
           <Text style={[styles.gridCell, styles.header]}>Remaining</Text>
-          <Text style={[styles.gridCell, styles.header]}>Subtract</Text>
+          <Text style={[styles.gridCell, styles.header]}>Per Round</Text>
         </View>
         {exercises.map((exercise, index) => (
           <View key={index} style={styles.gridRow}>
@@ -197,6 +198,12 @@ const styles = StyleSheet.create({
   timerButtonText: {
     color: colors.white,
     fontSize: 20,
+  },
+  roundsText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.dark_red,
+    marginBottom: 6,
   },
   grid: {
     width: '90%',

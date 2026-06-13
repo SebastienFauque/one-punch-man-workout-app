@@ -1,6 +1,6 @@
 export interface Workout {
   id: number;
-  name: string;
-  date: string;
-  completed_at: boolean;
+  data: string;
+  elapsed_seconds: number;
+  completed_at: string;
 }
