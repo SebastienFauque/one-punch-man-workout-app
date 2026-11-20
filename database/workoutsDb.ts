@@ -1,6 +1,6 @@
-import * as SQLite from 'expo-sqlite/legacy';
+import * as SQLite from 'expo-sqlite';
 
 // Open Database
-const workoutsDb = SQLite.openDatabase("workouts.db")
+const workoutsDb = SQLite.openDatabaseSync("workouts.db");
 
 export default workoutsDb;

@@ -123,9 +123,9 @@ export const NewWorkoutScreen: React.FC = () => {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <View style={{flexDirection: 'column', alignItems: 'center', marginRight: 30}}>
           <WheelPicker
-            selected={selectedLevel}
-            options={Array.from({length: TOTAL_LEVELS}, (_, i) => i + 1)}
-            onChange={(level: string) => {setSelectedLevel(Number(level))}}
+            selectedIndex={selectedLevel - 1}
+            options={Array.from({length: TOTAL_LEVELS}, (_, i) => String(i + 1))}
+            onChange={(index: number) => {setSelectedLevel(index + 1)}}
             containerStyle={{ width: 60, borderColor: colors.mustard, borderWidth: 2, borderRadius: 10}}
             selectedIndicatorStyle={{ backgroundColor: colors.sky_blue}}
             itemHeight={30}
