@@ -9,10 +9,11 @@ type RootStackParamList = {
   Home: undefined;
   ViewHistory: undefined;
   NewWorkout: undefined;
+  Stats: undefined;
 };
 
 type MainScreenProps = {
-  navigation: NavigationProp<RootStackParamList, 'ViewHistory' | 'NewWorkout'>;
+  navigation: NavigationProp<RootStackParamList, 'ViewHistory' | 'NewWorkout' | 'Stats'>;
 };
 
 
@@ -31,6 +32,9 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }: MainScreen
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('NewWorkout')}>
         <Text style={styles.buttonText}>New Workout</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Stats')}>
+        <Text style={styles.buttonText}>Statistics</Text>
       </TouchableOpacity>
     </View>
   );
@@ -51,12 +55,15 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: colors.red,
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 30,
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '70%',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });

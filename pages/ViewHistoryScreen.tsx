@@ -99,15 +99,11 @@ export const ViewHistoryScreen = () => {
     fetchCompletedWorkouts();
   }, []);
 
-  const currentMonth = moment().format('YYYY-MM');
-  const currentMonthStart = moment(currentMonth).startOf('month').format('YYYY-MM-DD');
-  const currentMonthEnd = moment(currentMonth).endOf('month').format('YYYY-MM-DD');
+  const workoutCount = Object.keys(markedDates).length;
 
   return (
     <View style={styles.container}>
       <Calendar
-        minDate={currentMonthStart}
-        maxDate={currentMonthEnd}
         markingType="custom"
         markedDates={markedDates}
         theme={{
@@ -129,7 +125,10 @@ export const ViewHistoryScreen = () => {
 
         }}
       />
-      <View style={styles.container}>
+      <View style={styles.summaryContainer}>
+        <Text style={styles.summaryText}>
+          {workoutCount} workout{workoutCount !== 1 ? 's' : ''} recorded
+        </Text>
         <TouchableOpacity style={styles.exportButton} onPress={handleExport}>
           <Text style={styles.exportButtonText}>Export Workouts</Text>
         </TouchableOpacity>
@@ -143,9 +142,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.yellow,
   },
-  exportContainer: {
+  summaryContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    paddingTop: 16,
+  },
+  summaryText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.dark_red,
+    marginBottom: 12,
   },
   title: {
     fontSize: 24,

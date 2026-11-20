@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { MainScreen } from './pages/MainScreen';
 import { ViewHistoryScreen } from './pages/ViewHistoryScreen';
 import { NewWorkoutScreen } from './pages/NewWorkoutScreen';
+import { StatsScreen } from './pages/StatsScreen';
 import { colors } from './styles/colors';
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
         <Stack.Screen name="Main" component={MainScreen} options={{ title: '' }} />
         <Stack.Screen name="ViewHistory" component={ViewHistoryScreen} options={{ headerTitle: () => <LogoTitle />, headerShown: true, headerStyle: { "backgroundColor": colors.yellow } }} />
         <Stack.Screen name="NewWorkout" component={NewWorkoutScreen} options={{ headerTitle: () => <LogoTitle />, headerShown: true, headerStyle: { "backgroundColor": colors.yellow } }} />
+        <Stack.Screen name="Stats" component={StatsScreen} options={{ headerTitle: () => <LogoTitle />, headerShown: true, headerStyle: { "backgroundColor": colors.yellow } }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
