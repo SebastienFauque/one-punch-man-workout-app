@@ -4,7 +4,7 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import * as Sharing from 'expo-sharing';
 import moment from 'moment';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { colors } from '../styles/colors';
 import workoutsDb from '../database/workoutsDb';
 import { Workout } from '../types/types';
@@ -58,42 +58,34 @@ export const ViewHistoryScreen = () => {
 
   useEffect(() => {
     const fetchCompletedWorkouts = async () => {
-      workoutsDb.transaction(tx => {
-        tx.executeSql(
-          'SELECT completed_at FROM workouts WHERE completed_at IS NOT NULL',
-          [],
-          (_, result) => {
-            const data: string[] = [];
-            for (let i = 0; i < result.rows.length; i++) {
-              data.push(result.rows.item(i).completed_at);
-            }
-
-            const markedDates = data.reduce<{ [key: string]: { selected: boolean; marked: boolean; customStyles: { container: ContainerStyle; text: TextStyle; }; }; }>((acc, dateString) => {
-              const localDateString = moment.utc(dateString).local().format('YYYY-MM-DD');
-              acc[localDateString] = {
-                selected: false,
-                marked: false,
-                customStyles: {
-                  container: {
-                    backgroundColor: colors.sky_blue,
-                    borderRadius: 10,
-                  },
-                  text: {
-                    color: colors.black,
-                  },
-                },
-              };
-              return acc;
-            }, {});
-
-            setMarkedDates(markedDates);
-          },
-          (_ , error ) => {
-            console.error('Error fetching data:', error);
-            return false;
-          }
+      try {
+        const rows = await workoutsDb.getAllAsync<{ completed_at: string }>(
+          'SELECT completed_at FROM workouts WHERE completed_at IS NOT NULL'
         );
-      });
+        const data = rows.map(r => r.completed_at);
+
+        const markedDates = data.reduce<{ [key: string]: { selected: boolean; marked: boolean; customStyles: { container: ContainerStyle; text: TextStyle; }; }; }>((acc, dateString) => {
+          const localDateString = moment.utc(dateString).local().format('YYYY-MM-DD');
+          acc[localDateString] = {
+            selected: false,
+            marked: false,
+            customStyles: {
+              container: {
+                backgroundColor: colors.sky_blue,
+                borderRadius: 10,
+              },
+              text: {
+                color: colors.black,
+              },
+            },
+          };
+          return acc;
+        }, {});
+
+        setMarkedDates(markedDates);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
     fetchCompletedWorkouts();
